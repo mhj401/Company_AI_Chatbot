@@ -30,7 +30,6 @@
     justify-content:center;
   }
 
-  /* 전체 래퍼: ChatGPT 느낌(좌우 여백 + 가운데 패널) */
   .page{
     width: 100%;
     max-width: 1920px;
@@ -47,7 +46,6 @@
     align-items:center;
     justify-content: center;
     position: relative;
-    /* border-bottom: 1px solid var(--line); */
     background: #fff;
   }
 
@@ -78,19 +76,10 @@
   .menu-btn:hover{ background:#f8fafc; }
   .menu-btn:active{ transform: scale(.98); }
 
-  .menu-btn .bars{
-    width: 18px;
-    height: 12px;
-    position: relative;
-  }
+  .menu-btn .bars{ width: 18px; height: 12px; position: relative; }
   .menu-btn .bars span{
-    position:absolute;
-    left:0;
-    width:100%;
-    height:2px;
-    background:#111827;
-    border-radius: 2px;
-    transition: .2s;
+    position:absolute; left:0; width:100%; height:2px;
+    background:#111827; border-radius:2px; transition:.2s;
   }
   .menu-btn .bars span:nth-child(1){ top:0; }
   .menu-btn .bars span:nth-child(2){ top:5px; }
@@ -99,7 +88,107 @@
   .menu-btn.is-open .bars span:nth-child(2){ opacity: 0; }
   .menu-btn.is-open .bars span:nth-child(3){ top:5px; transform: rotate(-45deg); }
 
-  /* 본문(채팅) */
+  /* 랜딩(첫 화면) */
+  .landing{
+    flex: 1;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    padding: 24px 16px 40px 16px;
+    background:#fff;
+  }
+
+  .landing-title{
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-align:center;
+  }
+
+  .landing-sub{
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    text-align:center;
+  }
+
+  .landing-composer{
+    width: 100%;
+    max-width: 820px;
+    display:flex;
+    gap: 10px;
+    align-items: flex-end;
+    margin-top: 10px;
+  }
+
+  .landing textarea{
+    flex:1;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 999px; /* 첫 화면은 더 pill 느낌 */
+    font-size: 15px;
+    outline: none;
+    resize: none;
+    overflow: hidden;
+    line-height: 1.5;
+    font-family: inherit;
+    height: 52px;       /* 첫 화면은 1줄 고정 */
+    max-height: 52px;
+    background:#fff;
+    transition: .15s;
+  }
+  .landing textarea:focus{
+    border-color: #c7d2fe;
+    box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+  }
+
+  .send-btn{
+    width: 52px;
+    height: 52px;
+    border: 1px solid #4285f4;
+    border-radius: 16px;
+    background: #4285f4;
+    cursor: pointer;
+    transition: .15s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .send-btn svg{ width:20px; height:20px; }
+  .send-btn:hover{ background:#1d4ed8; }
+  .send-btn:disabled{
+    background:#cbd5e1;
+    border-color:#cbd5e1;
+    cursor:not-allowed;
+  }
+
+  .chips{
+    width: 100%;
+    max-width: 820px;
+    display:flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content:center;
+    margin-top: 8px;
+  }
+  .chip{
+    border: 1px solid var(--line);
+    background: #fff;
+    color: #111827;
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-weight: 800;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .chip:hover{ background:#f8fafc; }
+
+  /* 채팅 화면 (처음엔 숨김) */
+  .chat-mode{ display:none; flex:1; flex-direction:column; background:#fff; }
+
   .chat-area{
     flex: 1;
     overflow-y: auto;
@@ -107,7 +196,6 @@
     background: #fff;
   }
 
-  /* ChatGPT 느낌: 가운데로 정렬된 메시지 라인 */
   .messages{
     width: 100%;
     max-width: 820px;
@@ -118,31 +206,10 @@
     padding-bottom: 20px;
   }
 
-  /* 한 줄(아바타 + 말풍선) */
-  .row{
-    display:flex;
-    gap: 10px;
-    align-items:flex-end;
-  }
+  .row{ display:flex; gap: 10px; align-items:flex-end; }
   .row.user{ justify-content: flex-end; }
   .row.bot{ justify-content: flex-start; }
 
-  .avatar{
-    width: 32px;
-    height: 32px;
-    border-radius: 12px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight: 900;
-    font-size: 12px;
-    border: 1px solid var(--line);
-    background: #fff;
-    color: #111827;
-    flex: 0 0 auto;
-  }
-
-  /* 말풍선 */
   .bubble{
     max-width: min(680px, 78vw);
     padding: 12px 14px;
@@ -164,11 +231,10 @@
     border-bottom-right-radius: 6px;
   }
 
-  /* 상단 안내(봇 첫 메시지처럼) */
   .hint{
     width: 100%;
     max-width: 820px;
-    margin: 14px auto 0 auto;
+    margin: 14px auto 20px auto;
     display:flex;
     align-items:center;
     gap: 10px;
@@ -184,9 +250,7 @@
     color:#111827;
   }
 
-  /* 하단 입력바(고정 느낌) */
   .composer-wrap{
-    /* border-top: 1px solid var(--line); */
     background: #fff;
     padding: 14px 12px 18px 12px;
   }
@@ -199,7 +263,8 @@
     align-items:flex-end;
   }
 
-  textarea{
+  /* 채팅 모드 textarea는 너가 만든 그대로 */
+  .chat-mode textarea{
     flex:1;
     padding: 14px 16px;
     border: 1px solid var(--line);
@@ -210,34 +275,14 @@
     overflow: hidden;
     line-height: 1.5;
     font-family: inherit;
-    height: calc(1.5em + 28px); /* 1줄 */
+    height: calc(1.5em + 28px);
+    max-height:350px;
     background:#fff;
     transition: .15s;
   }
-  textarea:focus{
+  .chat-mode textarea:focus{
     border-color: #c7d2fe;
     box-shadow: 0 0 0 3px rgba(99,102,241,.15);
-  }
-
-  .send-btn{
-    height: 44px;
-    padding: 0 16px;
-    border: 1px solid #4285f4;
-    border-radius: 14px;
-    background: #4285f4;
-    color: #fff;
-    font-weight: 800;
-    cursor: pointer;
-    transition: .15s;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .send-btn:hover{ background:#1d4ed8; }
-  .send-btn:disabled{
-    background:#cbd5e1;
-    border-color:#cbd5e1;
-    cursor: not-allowed;
   }
 
   .loading{
@@ -259,10 +304,7 @@
     transition: .2s;
     z-index: 40;
   }
-  .side-overlay.show{
-    opacity: 1;
-    pointer-events: auto;
-  }
+  .side-overlay.show{ opacity: 1; pointer-events: auto; }
 
   .side-menu{
     position: fixed;
@@ -329,11 +371,13 @@
     font-weight: 700;
   }
 
-  /* 모바일 대응 */
   @media (max-width: 520px){
     .topbar{ height: 58px; }
     .logo{ max-width: 200px; }
     .bubble{ max-width: 82vw; }
+    .landing-title{ font-size: 28px; }
+    .send-btn{ width: 48px; height: 48px; }
+    .landing textarea{ height: 48px; max-height:48px; }
   }
 </style>
 </head>
@@ -351,30 +395,52 @@
       </button>
     </div>
 
-    <!-- 채팅 -->
-    <div class="chat-area" id="chatScroll">
-      <div class="hint">
-        <span class="pill">Tip</span>
-        질문을 입력하고 Enter로 전송, Shift+Enter로 줄바꿈 할 수 있어요.
+    <!-- 첫 화면(랜딩) -->
+    <section class="landing" id="landing">
+      <h1 class="landing-title">어디서부터 시작할까요?</h1>
+      <p class="landing-sub">회사/사업/기술/문의 등 무엇이든 물어보세요.</p>
+
+      <div class="landing-composer">
+        <textarea id="landing-input" rows="1" placeholder="무엇이든 물어보세요"></textarea>
+        <button class="send-btn" id="landing-send" type="button" aria-label="전송">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M3 11.5L21 3L12.5 21L11 13L3 11.5Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
 
-      <div class="messages" id="chat-box">
-        <!-- 첫 메시지 -->
-        <div class="row bot">
-          <div class="avatar" aria-hidden="true">AI</div>
-          <div class="bubble">안녕하세요! 회사에 대해 무엇이든 물어보세요.</div>
+      <div class="chips">
+        <button class="chip" data-q="삼정ENR 회사 소개를 간단히 알려줘">회사 소개</button>
+        <button class="chip" data-q="Catalyst 사업/기술이 뭔지 설명해줘">Catalyst</button>
+        <button class="chip" data-q="주요 사업 분야와 강점은 뭐야?">사업 분야</button>
+        <button class="chip" data-q="Contact(문의) 방법 알려줘">문의하기</button>
+      </div>
+    </section>
+
+    <!-- 채팅 화면(처음엔 숨김) -->
+    <section class="chat-mode" id="chatMode">
+      <div class="chat-area" id="chatScroll">
+        <div class="hint">
+          <span class="pill">Tip</span>
+          Enter로 전송, Shift+Enter로 줄바꿈 할 수 있어요.
         </div>
-      </div>
-    </div>
 
-    <!-- 입력 -->
-    <div class="composer-wrap">
-      <div class="composer">
-        <textarea id="user-input" rows="1" placeholder="메시지를 입력하세요..."></textarea>
-        <button class="send-btn" onclick="sendMessage()" id="send-btn">전송</button>
+        <div class="messages" id="chat-box"></div>
       </div>
-      <div class="loading" id="loading">답변 생성 중...</div>
-    </div>
+
+      <div class="composer-wrap">
+        <div class="composer">
+          <textarea id="user-input" rows="1" placeholder="메시지를 입력하세요..."></textarea>
+
+          <button class="send-btn" onclick="sendMessage()" id="send-btn" aria-label="전송">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M3 11.5L21 3L12.5 21L11 13L3 11.5Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="loading" id="loading">답변 생성 중...</div>
+      </div>
+    </section>
   </div>
 
   <!-- 사이드 메뉴 -->
@@ -387,25 +453,56 @@
     </div>
 
     <nav class="side-menu__list">
-      <button class="side-menu__item" type="button" data-link="main">
-        Main <small>메인으로 이동</small>
-      </button>
-      <button class="side-menu__item" type="button" data-link="about">
-        About <small>회사 소개</small>
-      </button>
-      <button class="side-menu__item" type="button" data-link="catalyst">
-        Catalyst <small>주요 사업/기술</small>
-      </button>
-      <button class="side-menu__item" type="button" data-link="contact">
-        Contact <small>문의하기</small>
-      </button>
+      <button class="side-menu__item" type="button" data-link="main">Main <small>메인으로 이동</small></button>
+      <button class="side-menu__item" type="button" data-link="about">About <small>회사 소개</small></button>
+      <button class="side-menu__item" type="button" data-link="catalyst">Catalyst <small>주요 사업/기술</small></button>
+      <button class="side-menu__item" type="button" data-link="contact">Contact <small>문의하기</small></button>
     </nav>
   </aside>
 
 <script>
+  // ---------- 모드 전환 ----------
+  const landing = document.getElementById('landing');
+  const chatMode = document.getElementById('chatMode');
+
+  function goChatMode(){
+    landing.style.display = 'none';
+    chatMode.style.display = 'flex';
+  }
+
+  // ---------- 랜딩 입력 ----------
+  const landingInput = document.getElementById('landing-input');
+  const landingSend = document.getElementById('landing-send');
+
+  landingInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      startFromLanding();
+    }
+  });
+
+  landingSend.addEventListener('click', startFromLanding);
+
+  function startFromLanding(){
+    const q = landingInput.value.trim();
+    if(!q) return;
+    goChatMode();
+    document.getElementById('user-input').value = q;
+    sendMessage(); // 기존 전송 로직 재사용
+    landingInput.value = '';
+  }
+
+  // 추천 질문 chip
+  document.querySelectorAll('.chip').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      landingInput.value = btn.getAttribute('data-q');
+      startFromLanding();
+    });
+  });
+
+  // ---------- 채팅 입력 ----------
   const inputField = document.getElementById('user-input');
 
-  // Enter = 전송 / Shift+Enter = 줄바꿈
   inputField.addEventListener('keydown', function(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -413,14 +510,22 @@
     }
   });
 
-  // 자동 높이 조절 + 다 지우면 1줄로 복귀
   inputField.addEventListener('input', function () {
     this.style.height = 'auto';
+    const maxHeight = 350;
 
     if (this.value.trim() === '') {
       this.style.height = 'calc(1.5em + 28px)';
+      this.style.overflowY = 'hidden';
+      return;
+    }
+
+    if (this.scrollHeight > maxHeight) {
+      this.style.height = maxHeight + 'px';
+      this.style.overflowY = 'auto';
     } else {
       this.style.height = this.scrollHeight + 'px';
+      this.style.overflowY = 'hidden';
     }
   });
 
@@ -431,10 +536,15 @@
     const question = inputField.value.trim();
     if (!question) return;
 
+    // 채팅모드로 전환(혹시 랜딩에서 바로 호출될 때 대비)
+    if (chatMode.style.display !== 'flex') goChatMode();
+
     appendMessage(question, 'user');
 
     inputField.value = '';
     inputField.style.height = 'calc(1.5em + 28px)';
+    inputField.style.overflowY = 'hidden';
+    inputField.scrollTop = 0;
 
     inputField.disabled = true;
     sendBtn.disabled = true;
@@ -464,32 +574,18 @@
     const row = document.createElement('div');
     row.className = 'row ' + (who === 'user' ? 'user' : 'bot');
 
-    if (who === 'bot') {
-      const avatar = document.createElement('div');
-      avatar.className = 'avatar';
-      avatar.innerText = 'AI';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.innerText = text;
 
-      const bubble = document.createElement('div');
-      bubble.className = 'bubble';
-      bubble.innerText = text;
-
-      row.appendChild(avatar);
-      row.appendChild(bubble);
-    } else {
-      const bubble = document.createElement('div');
-      bubble.className = 'bubble';
-      bubble.innerText = text;
-      row.appendChild(bubble);
-    }
-
+    row.appendChild(bubble);
     chatBox.appendChild(row);
 
-    // 스크롤 하단 고정
     const chatScroll = document.getElementById('chatScroll');
     chatScroll.scrollTop = chatScroll.scrollHeight;
   }
 
-  // 사이드 메뉴 토글
+  // ---------- 사이드 메뉴 ----------
   const menuBtn = document.getElementById('menuBtn');
   const sideMenu = document.getElementById('sideMenu');
   const sideOverlay = document.getElementById('sideOverlay');
@@ -524,25 +620,19 @@
     if (e.key === 'Escape' && sideMenu.classList.contains('open')) closeMenu();
   });
 
-  // 메뉴 클릭 동작(원하는 방식으로 바꿔 쓰면 됨)
   document.querySelectorAll('.side-menu__item').forEach((btn) => {
     btn.addEventListener('click', () => {
-        const link = btn.getAttribute('data-link');
-
-        const routes = {
+      const link = btn.getAttribute('data-link');
+      const routes = {
         main: "https://samjungenr.imweb.me/main",
         about: "https://samjungenr.imweb.me/aboutus",
         catalyst: "https://samjungenr.imweb.me/catalyst",
         contact: "https://samjungenr.imweb.me/contact"
-        };
-
-        if (routes[link]) {
-        window.location.href = routes[link];
-        }
-
-        closeMenu();
+      };
+      if (routes[link]) window.location.href = routes[link];
+      closeMenu();
     });
-    });
+  });
 </script>
 </body>
 </html>
