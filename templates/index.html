@@ -41,12 +41,12 @@
 
   /* 상단바 */
   .topbar{
-    height: 64px;
     display:flex;
     align-items:center;
     justify-content: center;
     position: relative;
     background: #fff;
+    padding: 13px 0;
   }
 
   .logo{
@@ -61,7 +61,7 @@
   .menu-btn{
     position: absolute;
     right: 20px;
-    top: 12px;
+    top: 20px;
     width: 40px;
     height: 40px;
     border-radius: 12px;
@@ -97,7 +97,9 @@
     justify-content: center;
     align-items: center;
     gap: 18px;
-    padding: 24px 16px 40px 16px;
+    margin-top: 2%;
+    margin-bottom: 5%;
+    padding: 0px 16px 40px 16px;
     background:#fff;
   }
 
@@ -374,7 +376,7 @@
   }
 
   @media (max-width: 520px){
-    .topbar{ height: 58px; }
+    /* .topbar{ height: 58px; } */
     .logo{ max-width: 200px; }
     .bubble{ max-width: 82vw; }
     .landing-title{ font-size: 28px; }
@@ -463,7 +465,7 @@
   </aside>
 
 <script>
-  // ---------- 모드 전환 ----------
+  // 모드 전환 
   const landing = document.getElementById('landing');
   const chatMode = document.getElementById('chatMode');
 
@@ -472,7 +474,7 @@
     chatMode.style.display = 'flex';
   }
 
-  // ---------- 공통: textarea 자동 리사이즈 ----------
+  // 공통: textarea 자동 리사이즈 
   function attachAutoResize(textarea, maxHeight) {
     if (!textarea) return;
 
@@ -497,7 +499,7 @@
     });
   }
 
-  // ---------- 랜딩 입력 ----------
+  // 랜딩 입력 
   const landingInput = document.getElementById('landing-input');
   const landingSend = document.getElementById('landing-send');
 
@@ -546,7 +548,7 @@
     });
   });
 
-  // ---------- 채팅 입력 ----------
+  // 채팅 입력 
   const inputField = document.getElementById('user-input');
 
   // 채팅 자동 높이
@@ -621,7 +623,7 @@
     chatScroll.scrollTop = chatScroll.scrollHeight;
   }
 
-  // ---------- 사이드 메뉴 ----------
+  // 사이드 메뉴 
   const menuBtn = document.getElementById('menuBtn');
   const sideMenu = document.getElementById('sideMenu');
   const sideOverlay = document.getElementById('sideOverlay');
