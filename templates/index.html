@@ -54,6 +54,7 @@
     width: 100%;
     height: auto;
     display:block;
+    cursor: pointer;
   }
 
   /* 우측 상단 메뉴 버튼 */
@@ -128,18 +129,19 @@
     flex:1;
     padding: 16px 18px;
     border: 1px solid var(--line);
-    border-radius: 999px; /* 첫 화면은 더 pill 느낌 */
+    border-radius: 18px;
     font-size: 15px;
     outline: none;
     resize: none;
     overflow: hidden;
     line-height: 1.5;
     font-family: inherit;
-    height: 52px;       /* 첫 화면은 1줄 고정 */
-    max-height: 52px;
+    height: 55px; 
+    max-height: 180px;    
     background:#fff;
     transition: .15s;
   }
+
   .landing textarea:focus{
     border-color: #c7d2fe;
     box-shadow: 0 0 0 3px rgba(99,102,241,.15);
@@ -149,7 +151,7 @@
     width: 52px;
     height: 52px;
     border: 1px solid #4285f4;
-    border-radius: 16px;
+    border-radius: 999px;
     background: #4285f4;
     cursor: pointer;
     transition: .15s;
@@ -263,10 +265,10 @@
     align-items:flex-end;
   }
 
-  /* 채팅 모드 textarea는 너가 만든 그대로 */
+  /* 채팅 모드 textarea */
   .chat-mode textarea{
     flex:1;
-    padding: 14px 16px;
+    padding: 16px 18px;
     border: 1px solid var(--line);
     border-radius: 18px;
     font-size: 15px;
@@ -275,8 +277,8 @@
     overflow: hidden;
     line-height: 1.5;
     font-family: inherit;
-    height: calc(1.5em + 28px);
-    max-height:350px;
+    height: 55px; 
+    max-height: 180px;    
     background:#fff;
     transition: .15s;
   }
@@ -386,7 +388,7 @@
   <div class="page">
     <!-- 상단바 -->
     <div class="topbar">
-      <img class="logo" src="/static/img/samajung-logo.png" alt="" />
+      <img class="logo" src="/static/img/samajung-logo.png" alt="" onclick="location.href='/templates/index.html'" />
 
       <button class="menu-btn" id="menuBtn" type="button" aria-label="메뉴 열기">
         <div class="bars" aria-hidden="true">
@@ -397,7 +399,7 @@
 
     <!-- 첫 화면(랜딩) -->
     <section class="landing" id="landing">
-      <h1 class="landing-title">어디서부터 시작할까요?</h1>
+      <h1 class="landing-title">무엇을 도와드릴까요?</h1>
       <p class="landing-sub">회사/사업/기술/문의 등 무엇이든 물어보세요.</p>
 
       <div class="landing-composer">
@@ -465,17 +467,46 @@
   const landing = document.getElementById('landing');
   const chatMode = document.getElementById('chatMode');
 
-  function goChatMode(){
+  function goChatMode() {
     landing.style.display = 'none';
     chatMode.style.display = 'flex';
+  }
+
+  // ---------- 공통: textarea 자동 리사이즈 ----------
+  function attachAutoResize(textarea, maxHeight) {
+    if (!textarea) return;
+
+    const baseHeight = 55; // 기본 한줄 높이
+
+    textarea.addEventListener('input', function () {
+      this.style.height = 'auto';
+
+      if (this.value.trim() === '') {
+        this.style.height = baseHeight + 'px';
+        this.style.overflowY = 'hidden';
+        return;
+      }
+
+      if (this.scrollHeight > maxHeight) {
+        this.style.height = maxHeight + 'px';
+        this.style.overflowY = 'auto';
+      } else {
+        this.style.height = this.scrollHeight + 'px';
+        this.style.overflowY = 'hidden';
+      }
+    });
   }
 
   // ---------- 랜딩 입력 ----------
   const landingInput = document.getElementById('landing-input');
   const landingSend = document.getElementById('landing-send');
 
+  // 랜딩 자동 높이
+  attachAutoResize(landingInput, 180);
+
+  // Enter=전송 / Shift+Enter=줄바꿈
   landingInput.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter'){
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       startFromLanding();
     }
@@ -483,19 +514,34 @@
 
   landingSend.addEventListener('click', startFromLanding);
 
-  function startFromLanding(){
+  function startFromLanding() {
     const q = landingInput.value.trim();
-    if(!q) return;
+    const baseHeight = 55;
+
+    if (!q) return;
+
     goChatMode();
-    document.getElementById('user-input').value = q;
-    sendMessage(); // 기존 전송 로직 재사용
+
+    // 채팅 입력에 전달하고 전송
+    const inputField = document.getElementById('user-input');
+    inputField.value = q;
+
+    // 채팅 입력 높이도 즉시 반영
+    inputField.dispatchEvent(new Event('input'));
+
+    sendMessage();
+
+    // 랜딩 입력 리셋
     landingInput.value = '';
+    landingInput.style.height = baseHeight + 'px';
+    landingInput.style.overflowY = 'hidden';
   }
 
   // 추천 질문 chip
   document.querySelectorAll('.chip').forEach((btn) => {
     btn.addEventListener('click', () => {
-      landingInput.value = btn.getAttribute('data-q');
+      landingInput.value = btn.getAttribute('data-q') || '';
+      landingInput.dispatchEvent(new Event('input'));
       startFromLanding();
     });
   });
@@ -503,35 +549,21 @@
   // ---------- 채팅 입력 ----------
   const inputField = document.getElementById('user-input');
 
-  inputField.addEventListener('keydown', function(event) {
+  // 채팅 자동 높이
+  attachAutoResize(inputField, 180);
+
+  // Enter=전송 / Shift+Enter=줄바꿈
+  inputField.addEventListener('keydown', function (event) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       sendMessage();
     }
   });
 
-  inputField.addEventListener('input', function () {
-    this.style.height = 'auto';
-    const maxHeight = 350;
-
-    if (this.value.trim() === '') {
-      this.style.height = 'calc(1.5em + 28px)';
-      this.style.overflowY = 'hidden';
-      return;
-    }
-
-    if (this.scrollHeight > maxHeight) {
-      this.style.height = maxHeight + 'px';
-      this.style.overflowY = 'auto';
-    } else {
-      this.style.height = this.scrollHeight + 'px';
-      this.style.overflowY = 'hidden';
-    }
-  });
-
   async function sendMessage() {
     const sendBtn = document.getElementById('send-btn');
     const loading = document.getElementById('loading');
+    const baseHeight = 55;
 
     const question = inputField.value.trim();
     if (!question) return;
@@ -541,8 +573,9 @@
 
     appendMessage(question, 'user');
 
+    // 입력 리셋
     inputField.value = '';
-    inputField.style.height = 'calc(1.5em + 28px)';
+    inputField.style.height = baseHeight + 'px';
     inputField.style.overflowY = 'hidden';
     inputField.scrollTop = 0;
 
@@ -560,7 +593,7 @@
       const data = await response.json();
       appendMessage(data.answer, 'bot');
     } catch (error) {
-      appendMessage("오류가 발생했습니다.", 'bot');
+      appendMessage('오류가 발생했습니다.', 'bot');
     }
 
     inputField.disabled = false;
@@ -571,6 +604,7 @@
 
   function appendMessage(text, who) {
     const chatBox = document.getElementById('chat-box');
+
     const row = document.createElement('div');
     row.className = 'row ' + (who === 'user' ? 'user' : 'bot');
 
@@ -578,7 +612,9 @@
     bubble.className = 'bubble';
     bubble.innerText = text;
 
+    // ✅ 현재 네 마크업/스타일 기준(아바타 없이 bubble만)
     row.appendChild(bubble);
+
     chatBox.appendChild(row);
 
     const chatScroll = document.getElementById('chatScroll');
@@ -624,11 +660,12 @@
     btn.addEventListener('click', () => {
       const link = btn.getAttribute('data-link');
       const routes = {
-        main: "https://samjungenr.imweb.me/main",
-        about: "https://samjungenr.imweb.me/aboutus",
-        catalyst: "https://samjungenr.imweb.me/catalyst",
-        contact: "https://samjungenr.imweb.me/contact"
+        main: 'https://samjungenr.imweb.me/main',
+        about: 'https://samjungenr.imweb.me/aboutus',
+        catalyst: 'https://samjungenr.imweb.me/catalyst',
+        contact: 'https://samjungenr.imweb.me/contact'
       };
+
       if (routes[link]) window.location.href = routes[link];
       closeMenu();
     });
