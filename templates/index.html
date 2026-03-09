@@ -292,7 +292,7 @@
   .loading{
     width: 100%;
     max-width: 820px;
-    margin: 8px auto 0 auto;
+    margin: 8px auto 16px auto;
     color: var(--muted);
     font-size: 12px;
     display:none;
@@ -375,6 +375,15 @@
     font-weight: 700;
   }
 
+  .tw-cursor{
+    display:inline-block;
+    width: 8px;
+    margin-left: 2px;
+    opacity: .7;
+    animation: twBlink 1s steps(2, start) infinite;
+  }
+  @keyframes twBlink { to { opacity: 0; } }
+
   @media (max-width: 520px){
     /* .topbar{ height: 58px; } */
     .logo{ max-width: 200px; }
@@ -390,7 +399,7 @@
   <div class="page">
     <!-- 상단바 -->
     <div class="topbar">
-      <img class="logo" src="/static/img/samajung-logo.png" alt="" onclick="location.href='/templates/index.html'" />
+      <img class="logo" src="/static/img/samajung-logo.png" alt="" onclick="location.href='/'" />
 
       <button class="menu-btn" id="menuBtn" type="button" aria-label="메뉴 열기">
         <div class="bars" aria-hidden="true">
@@ -402,7 +411,7 @@
     <!-- 첫 화면(랜딩) -->
     <section class="landing" id="landing">
       <h1 class="landing-title">무엇을 도와드릴까요?</h1>
-      <p class="landing-sub">회사/사업/기술/문의 등 무엇이든 물어보세요.</p>
+      <p class="landing-sub">회사/사업/기술 등 무엇이든 물어보세요.</p>
 
       <div class="landing-composer">
         <textarea id="landing-input" rows="1" placeholder="무엇이든 물어보세요"></textarea>
@@ -414,10 +423,10 @@
       </div>
 
       <div class="chips">
-        <button class="chip" data-q="삼정ENR 회사 소개를 간단히 알려줘">회사 소개</button>
-        <button class="chip" data-q="Catalyst 사업/기술이 뭔지 설명해줘">Catalyst</button>
+        <button class="chip" data-q="회사 소개를 해줘">회사 소개</button>
         <button class="chip" data-q="주요 사업 분야와 강점은 뭐야?">사업 분야</button>
-        <button class="chip" data-q="Contact(문의) 방법 알려줘">문의하기</button>
+        <button class="chip" data-q="chmo에 대해 설명해줘">CHMO</button>
+        <button class="chip" data-q="heradee에 대해 설명해줘">HERADEE</button>
       </div>
     </section>
 
@@ -430,6 +439,7 @@
         </div>
 
         <div class="messages" id="chat-box"></div>
+        <div class="loading" id="loading">답변 생성 중...</div>
       </div>
 
       <div class="composer-wrap">
@@ -442,7 +452,6 @@
             </svg>
           </button>
         </div>
-        <div class="loading" id="loading">답변 생성 중...</div>
       </div>
     </section>
   </div>
@@ -457,10 +466,10 @@
     </div>
 
     <nav class="side-menu__list">
-      <button class="side-menu__item" type="button" data-link="main">Main <small>메인으로 이동</small></button>
-      <button class="side-menu__item" type="button" data-link="about">About <small>회사 소개</small></button>
-      <button class="side-menu__item" type="button" data-link="catalyst">Catalyst <small>주요 사업/기술</small></button>
-      <button class="side-menu__item" type="button" data-link="contact">Contact <small>문의하기</small></button>
+      <button class="side-menu__item" type="button" data-link="main">MAIN <small>메인으로 이동</small></button>
+      <button class="side-menu__item" type="button" data-link="heradee">HERADEE <small>헤라디 소개</small></button>
+      <button class="side-menu__item" type="button" data-link="aixoz">AiXOZ <small>aixoz 소개</small></button>
+      <button class="side-menu__item" type="button" data-link="chmo">CHMO <small>크모 소개</small></button>
     </nav>
   </aside>
 
@@ -474,31 +483,43 @@
     chatMode.style.display = 'flex';
   }
 
-  // 공통: textarea 자동 리사이즈 
+  // 공통: textarea 자동 리사이즈 (Shift+Enter 줄바꿈 시에도 확실히 커지게)
   function attachAutoResize(textarea, maxHeight) {
-    if (!textarea) return;
+  if (!textarea) return;
 
-    const baseHeight = 55; // 기본 한줄 높이
+  const baseHeight = 55;
 
-    textarea.addEventListener('input', function () {
-      this.style.height = 'auto';
+  function resize() {
+    // 높이 재계산
+    textarea.style.height = '0px'; // ✅ auto보다 0px가 더 안정적인 브라우저들이 있음
+    const next = Math.min(maxHeight, textarea.scrollHeight);
 
-      if (this.value.trim() === '') {
-        this.style.height = baseHeight + 'px';
-        this.style.overflowY = 'hidden';
-        return;
-      }
+    // 비었으면 1줄 고정
+    if (textarea.value.trim() === '') {
+      textarea.style.height = baseHeight + 'px';
+      textarea.style.overflowY = 'hidden';
+      return;
+    }
 
-      if (this.scrollHeight > maxHeight) {
-        this.style.height = maxHeight + 'px';
-        this.style.overflowY = 'auto';
-      } else {
-        this.style.height = this.scrollHeight + 'px';
-        this.style.overflowY = 'hidden';
-      }
-    });
+    textarea.style.height = next + 'px';
+    textarea.style.overflowY = (textarea.scrollHeight > maxHeight) ? 'auto' : 'hidden';
   }
 
+  // 기본 input
+  textarea.addEventListener('input', resize);
+
+  // paste/cut은 input 타이밍이 애매한 경우가 있어 보강
+  textarea.addEventListener('paste', () => setTimeout(resize, 0));
+  textarea.addEventListener('cut', () => setTimeout(resize, 0));
+
+  // ✅ 핵심: Enter(줄바꿈)는 keyup에서(값 반영 후) 한 번 더 resize
+  textarea.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') resize();
+  });
+
+  // 초기 1회
+  resize();
+}
   // 랜딩 입력 
   const landingInput = document.getElementById('landing-input');
   const landingSend = document.getElementById('landing-send');
@@ -508,10 +529,18 @@
 
   // Enter=전송 / Shift+Enter=줄바꿈
   landingInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      startFromLanding();
+    if (e.key !== 'Enter') return;
+
+    if (e.shiftKey) {
+      // 줄바꿈 후 높이 반영
+      requestAnimationFrame(() => {
+        landingInput.dispatchEvent(new Event('input'));
+      });
+      return;
     }
+
+    e.preventDefault();
+    startFromLanding();
   });
 
   landingSend.addEventListener('click', startFromLanding);
@@ -524,11 +553,10 @@
 
     goChatMode();
 
-    // 채팅 입력에 전달하고 전송
     const inputField = document.getElementById('user-input');
     inputField.value = q;
 
-    // 채팅 입력 높이도 즉시 반영
+    // 높이 즉시 반영
     inputField.dispatchEvent(new Event('input'));
 
     sendMessage();
@@ -556,11 +584,63 @@
 
   // Enter=전송 / Shift+Enter=줄바꿈
   inputField.addEventListener('keydown', function (event) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      sendMessage();
+    if (event.key !== 'Enter') return;
+
+    // Shift+Enter = 줄바꿈
+    if (event.shiftKey) {
+      requestAnimationFrame(() => {
+        inputField.dispatchEvent(new Event('input'));
+      });
+      return;
     }
+
+    // Enter = 전송
+    event.preventDefault();
+    sendMessage();
   });
+
+  /* ===============================
+    TYPEWRITER EFFECT
+  ================================ */
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function typewriterText(targetEl, text, speed = 12) {
+    const cursor = document.createElement('span');
+    cursor.className = 'tw-cursor';
+    cursor.textContent = '▍';
+
+    targetEl.textContent = '';
+    targetEl.appendChild(cursor);
+
+    let i = 0;
+
+    while (i < text.length) {
+      cursor.insertAdjacentText('beforebegin', text[i]);
+      i++;
+
+      const chatScroll = document.getElementById('chatScroll');
+      chatScroll.scrollTop = chatScroll.scrollHeight;
+
+      await sleep(speed);
+    }
+
+    cursor.remove();
+  }
+
+  function convertLinks(text) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+    return text.replace(urlRegex, function (url) {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    });
+  }
+
+  /* ===============================
+    메시지 전송
+  ================================ */
 
   async function sendMessage() {
     const sendBtn = document.getElementById('send-btn');
@@ -570,7 +650,6 @@
     const question = inputField.value.trim();
     if (!question) return;
 
-    // 채팅모드로 전환(혹시 랜딩에서 바로 호출될 때 대비)
     if (chatMode.style.display !== 'flex') goChatMode();
 
     appendMessage(question, 'user');
@@ -583,6 +662,7 @@
 
     inputField.disabled = true;
     sendBtn.disabled = true;
+
     loading.style.display = 'block';
 
     try {
@@ -593,16 +673,27 @@
       });
 
       const data = await response.json();
-      appendMessage(data.answer, 'bot');
+
+      loading.style.display = 'none';
+
+      const botBubble = appendMessage('', 'bot');
+      await typewriterText(botBubble, data.answer, 12);
+
+      botBubble.innerHTML = convertLinks(data.answer);
+
     } catch (error) {
+      loading.style.display = 'none';
       appendMessage('오류가 발생했습니다.', 'bot');
     }
 
     inputField.disabled = false;
     sendBtn.disabled = false;
-    loading.style.display = 'none';
     inputField.focus();
   }
+
+  /* ===============================
+    메시지 출력
+  ================================ */
 
   function appendMessage(text, who) {
     const chatBox = document.getElementById('chat-box');
@@ -612,18 +703,22 @@
 
     const bubble = document.createElement('div');
     bubble.className = 'bubble';
-    bubble.innerText = text;
 
-    // ✅ 현재 네 마크업/스타일 기준(아바타 없이 bubble만)
+    if (who === 'user') bubble.innerText = text;
+
     row.appendChild(bubble);
-
     chatBox.appendChild(row);
 
     const chatScroll = document.getElementById('chatScroll');
     chatScroll.scrollTop = chatScroll.scrollHeight;
+
+    return bubble;
   }
 
-  // 사이드 메뉴 
+  /* ===============================
+    사이드 메뉴
+  ================================ */
+
   const menuBtn = document.getElementById('menuBtn');
   const sideMenu = document.getElementById('sideMenu');
   const sideOverlay = document.getElementById('sideOverlay');
@@ -661,14 +756,16 @@
   document.querySelectorAll('.side-menu__item').forEach((btn) => {
     btn.addEventListener('click', () => {
       const link = btn.getAttribute('data-link');
+
       const routes = {
-        main: 'https://samjungenr.imweb.me/main',
-        about: 'https://samjungenr.imweb.me/aboutus',
-        catalyst: 'https://samjungenr.imweb.me/catalyst',
-        contact: 'https://samjungenr.imweb.me/contact'
+        main: 'https://platformoz.com/',
+        heradee: 'https://platformoz.com/heradee',
+        aixoz: 'https://platformoz.com/aixoz',
+        chmo: 'https://platformoz.com/chmo'
       };
 
       if (routes[link]) window.location.href = routes[link];
+
       closeMenu();
     });
   });
