@@ -5,7 +5,8 @@ COMPANY_URLS = [
     "https://platformoz.com/company",
     "https://platformoz.com/heradee",
     "https://platformoz.com/aixoz",
-    "https://platformoz.com/chmo"
+    "https://platformoz.com/chmo",
+    "https://platformoz.com/secret_dB_notouch"
 ]
 
 def main():
