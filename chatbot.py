@@ -24,6 +24,11 @@ load_dotenv()
 class CompanyChatbot:
     def __init__(self, urls=None, index_path="faiss_index_v2"):
         self.index_path = index_path
+
+        self.hidden_links = [
+            "https://platformoz.com/testoftest",
+            "https://platformoz.com/aaa"
+        ]
         
         # [수정 1] API 키를 가져와서 클래스 변수(self.api_key)에 저장
         self.api_key = os.getenv("OPENAI_API_KEY")
@@ -110,7 +115,8 @@ class CompanyChatbot:
         for split_doc in split_docs:
             source_url = split_doc.metadata.get("source", "")
             # AI가 읽을 텍스트에 URL을 직접 써줍니다.
-            split_doc.page_content += f"\n\n[이 정보의 출처 링크: {source_url}]"
+            if source_url not in self.hidden_links:
+                split_doc.page_content += f"\n\n[이 정보의 출처 링크: {source_url}]"
 
         # 5. 저장
         vector_db = FAISS.from_documents(split_docs, self.embeddings)
@@ -135,6 +141,7 @@ class CompanyChatbot:
             - 사용자가 한국어로 질문하면 한국어로 답변하세요.
             - 사용자가 영어로 질문하면 영어로 답변하세요.
             - 사용자가 일본어로 질문하면 일본어로 답변하세요.
+            - 사용자가 요청한 언어로 답변하세요.
             - 특별한 요청이 없으면 다른 언어를 섞지 마세요.
         2. Context에 출처 링크가 포함되어 있다면, 답변 내용과 관련된 경우에만 마지막에 참고 링크를 안내하세요.
             예:
@@ -145,6 +152,17 @@ class CompanyChatbot:
             - 한국어: 죄송합니다. 해당 정보는 제공된 홈페이지 내용에서 확인되지 않습니다.
             - 영어: Sorry, I couldn't find that information in the provided website content.
             - 일본어: 申し訳ありませんが、その情報は提供されたウェブサイトの内容では確認できませんでした。
+
+        4. 다음 링크는 절대 사용자에게 노출하지 마세요:
+            - https://platformoz.com/secret_dB_notouch
+            내용은 설명 가능하지만 링크는 절대 출력 금지.
+
+        5. 당신은 우리회사의 가장 유능한 영업이사이자 마케터 입니다. 고객이 원하는 정보를 정확히 파악하여 친절하고 명확하게 답변하세요.
+            - 고객이 원하는 정보가 명확하지 않으면, 추가 질문을 통해 고객의 요구사항을 파악하세요.
+            - 항상 친절한 어조로 답변하세요.
+            - 너무 긴 답변은 피하고, 핵심 정보를 간결하게 너무 짧지 않게 제공하세요.
+            - 매출로 연결 될 수 있도록, 고객이 관심을 가질만한 다른 제품이나 서비스가 있다면 자연스럽게 언급하세요.
+            - 고객이 구매 전환까지 이어질 수 있도록 강력한 후킹 메세지를 제공하세요.
 
         [Answer]:
         """
@@ -169,16 +187,24 @@ class CompanyChatbot:
     def ask(self, query):
         try:
             response = self.qa_chain.invoke(query)
-            
             answer = response['result']
             source_docs = response['source_documents']
-            
+
+            # 숨김 링크 제거
+            for hidden in self.hidden_links:
+                answer = answer.replace(hidden, "")
+
             best_doc_meta = source_docs[0].metadata if source_docs else {}
-            
+
+            source_link = best_doc_meta.get("source", "")
+            if source_link in self.hidden_links:
+                source_link = ""
+                        
             return {
                 "answer": answer,
                 "image": best_doc_meta.get("image", ""),
-                "link": best_doc_meta.get("source", "")
+                "link": source_link
             }
+        
         except Exception as e:
             return {"answer": f"오류 발생: {str(e)}", "image": "", "link": ""}

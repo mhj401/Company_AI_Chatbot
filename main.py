@@ -1,12 +1,16 @@
 from chatbot import CompanyChatbot
 
 # 1. 학습시킬 URL 정의 (3~4개)
+# COMPANY_URLS = [
+#     "https://platformoz.com/company",
+#     "https://platformoz.com/heradee",
+#     "https://platformoz.com/aixoz",
+#     "https://platformoz.com/chmo",
+#     "https://platformoz.com/secret_dB_notouch"
+# ]
 COMPANY_URLS = [
-    "https://platformoz.com/company",
-    "https://platformoz.com/heradee",
-    "https://platformoz.com/aixoz",
-    "https://platformoz.com/chmo",
-    "https://platformoz.com/secret_dB_notouch"
+    "https://platformoz.com/testoftest",
+    "https://platformoz.com/aaa"
 ]
 
 def main():

@@ -6,12 +6,16 @@ app = Flask(__name__)
 
 # [주의] 기존 faiss_index 폴더를 삭제하고 다시 실행하세요! (데이터 구조가 바뀜)
 # 테스트할 URL 리스트
+# TARGET_URLS = [
+#     "https://platformoz.com/company",
+#     "https://platformoz.com/heradee",
+#     "https://platformoz.com/aixoz",
+#     "https://platformoz.com/chmo",
+#     "https://platformoz.com/secret_dB_notouch"
+# ]
 TARGET_URLS = [
-    "https://platformoz.com/company",
-    "https://platformoz.com/heradee",
-    "https://platformoz.com/aixoz",
-    "https://platformoz.com/chmo",
-    "https://platformoz.com/secret_dB_notouch"
+    "https://platformoz.com/testoftest",
+    "https://platformoz.com/aaa"
 ]
 
 print("🤖 챗봇 로딩 중...")
